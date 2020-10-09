@@ -10,7 +10,9 @@ for dirname, _, filenames in os.walk("/input"):
 with open("input/busy_day.in") as file:
     data_list = file.read().splitlines()
 
-n_rows_grids, n_collumns_grids, n_drones, n_turns, max_payload = [int(x) for x in data_list[0].split(" ")]
+n_rows_grids, n_collumns_grids, n_drones, n_turns, max_payload = [
+    int(x) for x in data_list[0].split(" ")
+]
 
 n_product_types = int(data_list[1])
 all_product_weights = [int(x) for x in data_list[2].split(" ")]
@@ -21,16 +23,19 @@ n_warehouses = int(data_list[3])
 location_warehouses = dict()
 inventory_warehouses = dict()
 
-indices = zip(range(4,4+n_warehouses*2,2), range(5,20+n_warehouses*2,2))
-for index_warehouse,(row_location,row_inventory) in enumerate(indices):
-    location_warehouses[index_warehouse] = [int(x) for x in data_list[row_location].split(" ")]
+indices = zip(range(4, 4 + n_warehouses * 2, 2), range(5, 20 + n_warehouses * 2, 2))
+for index_warehouse, (row_location, row_inventory) in enumerate(indices):
+    location_warehouses[index_warehouse] = [
+        int(x) for x in data_list[row_location].split(" ")
+    ]
     all_product_inventory = get_int_list(data_list[row_inventory])
-    inventory_warehouses[index_warehouse] = {i: all_product_inventory[i] for i in range(n_product_types)}
+    inventory_warehouses[index_warehouse] = {
+        i: all_product_inventory[i] for i in range(n_product_types)
+    }
 n_orders = get_int_list(data_list[24])
 
 print(location_warehouses, inventory_warehouses)
 print(
-
     "rows of grid,columns of grid,drones,turns, maxpay load in units(u):",
     data_list[0],
     "\n Different product types:",
@@ -56,4 +61,3 @@ print(
     "\n Items of product types:",
     data_list[27],
 )
-
