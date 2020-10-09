@@ -74,3 +74,6 @@ order_df=order_df.astype('int')
 
 import seaborn as sns
 sns.scatterplot(data=order_df, x="order_coor_x", y="order_coor_y")#, hue="time")
+
+import matplotlib as plt
+plt.show()
