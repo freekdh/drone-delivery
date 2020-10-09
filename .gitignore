@@ -3,3 +3,4 @@ venv/**
 *.iml
 
 .python-version
+.vscode/
