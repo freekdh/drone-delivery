@@ -48,3 +48,29 @@ cols=[f'ware_house_{i}' for i in range(len(warehouse_df))]
 products_df = pd.DataFrame([x.split() for x in data_list[5:24:2]]).T
 
 products_df.columns=cols
+
+# lets add weight of each product to product_df
+
+products_df['prod_weight']= data_list[2].split()
+
+products_df=products_df.astype('int')
+
+# lets create a orders data frame
+
+max_len_order=max([len(x.split()) for x in data_list[27:3775:3]])
+
+cols_order=[f'prod_{i}' for i in range(max_len_order)]
+
+order_df = pd.DataFrame([x.split() for x in data_list[27:3775:3]]).fillna(0).astype('int')
+
+order_df.columns=cols_order
+
+order_df['order_items'] = data_list[26:3775:3]
+
+order_df['order_coor_x'] = [x.split()[0] for x in data_list[25:3775:3]]
+order_df['order_coor_y'] = [x.split()[1] for x in data_list[25:3775:3]]
+
+order_df=order_df.astype('int')
+
+import seaborn as sns
+sns.scatterplot(data=order_df, x="order_coor_x", y="order_coor_y")#, hue="time")
