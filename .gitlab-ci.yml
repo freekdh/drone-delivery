@@ -1,0 +1,11 @@
+image: python:latest
+
+before_script:
+  - python -V  # Print out python version for debugging
+  - pip install -r requirements.txt
+  - pip install -e . # Installs our local code as symlink
+
+test:
+  script:
+    - pytest --run_integration
+    - black --check .

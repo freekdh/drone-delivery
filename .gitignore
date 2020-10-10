@@ -4,3 +4,5 @@ venv/**
 
 .python-version
 .vscode/
+dronedelivery.egg-info/
+__pycache__/
