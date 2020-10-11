@@ -33,45 +33,51 @@ class Command(LinkedListNode, ABC):
     def get_string_representation(self):
         raise NotImplementedError
 
-    def get_drone(self):
-        self.get_previous_node()
-
 
 class Load(Command):
-    def __init__(self, product, n_items, warehouse):
+    def __init__(self, drone, product, n_items, warehouse):
+        super().__init__()
+        self.drone = drone
         self.product = product
         self.n_items = n_items
         self.warehouse = warehouse
 
     def get_string_representation(self):
-        return f"{self.get_drone().drone_id} L {self.warehouse.warehouse_id} {self.product.product_id} {self.n_items}"
+        return f"{self.drone.drone_id} L {self.warehouse.warehouse_id} {self.product.product_id} {self.n_items}"
 
 
 class Unload(Command):
-    def __init__(self, product, n_items, warehouse):
+    def __init__(self, drone, product, n_items, warehouse):
+        super().__init__()
+        self.drone = drone
         self.product = product
         self.n_items = n_items
         self.warehouse = warehouse
 
-        return f"{self.get_drone().drone_id} U {self.warehouse.warehouse_id} {self.product.product_id} {self.n_items}"
+    def get_string_representation(self):
+        return f"{self.drone.drone_id} U {self.warehouse.warehouse_id} {self.product.product_id} {self.n_items}"
 
 
 class Deliver(Command):
-    def __init__(self, order, product, n_items):
+    def __init__(self, drone, order, product, n_items):
+        super().__init__()
+        self.drone = drone
         self.product = product
         self.n_items = n_items
         self.order = order
 
     def get_string_representation(self):
-        return f"{self.get_drone().drone_id} D {self.order.order_id} {self.product.product_id} {self.n_items}"
+        return f"{self.drone.drone_id} D {self.order.order_id} {self.product.product_id} {self.n_items}"
 
 
 class Wait(Command):
-    def __init__(self, wait_turns):
+    def __init__(self, drone, wait_turns):
+        super().__init__()
+        self.drone = drone
         self.wait_turns = wait_turns
 
     def get_string_representation(self):
-        return f"{self.get_drone().drone_id} W {self.wait_turns}"
+        return f"{self.drone.drone_id} W {self.wait_turns}"
 
 
 class EmptyDroneSchedule(Exception):
