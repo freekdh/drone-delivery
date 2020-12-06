@@ -1,7 +1,7 @@
 from itertools import product
 import math
 
-from problem.objects.grid import Location
+from dronedelivery.problem.objects.grid import Location
 
 
 class Environment:
@@ -18,19 +18,17 @@ class Environment:
             for x, y in product(range(self.grid.n_x), range(self.grid.n_y))
         )
 
-    def get_nearest_warehouse(self, location):
+    def get_nearest_warehouse(self, place):
         distances_to_warehouses = {
-            warehouse: self.get_distance(
-                location_1=location, location_2=warehouse.location
-            )
+            warehouse: self.get_distance(place_1=place, place_2=warehouse)
             for warehouse in self.warehouses
         }
         return min(distances_to_warehouses.items(), key=lambda x: x[1])[0]
 
-    def get_distance(self, location_1, location_2):
+    def get_distance(self, place_1, place_2):
         return math.ceil(
             math.sqrt(
-                abs(location_1.x - location_2.x) ** 2
-                + abs(location_1.y - location_2.y) ** 2
+                abs(place_1.location.x - place_2.location.x) ** 2
+                + abs(place_1.location.y - place_2.location.y) ** 2
             )
         )

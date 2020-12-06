@@ -1,9 +1,16 @@
 from pytest import fixture
 import random
 
-from problem.problem import Problem
-from solvers.drone_schedule_configuration import DroneScheduleConfiguration
-from solvers.drone_schedule_configuration import Load, Unload, Deliver, Wait
+from dronedelivery.problem.problem import Problem
+from dronedelivery.solvers.drone_schedule_configuration import (
+    DroneScheduleConfiguration,
+)
+from dronedelivery.solvers.drone_schedule_configuration import (
+    Load,
+    Unload,
+    Deliver,
+    Wait,
+)
 
 
 @fixture(scope="session")

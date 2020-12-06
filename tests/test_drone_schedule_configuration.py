@@ -1,6 +1,9 @@
 from copy import deepcopy
 
-from solvers.drone_schedule_configuration import DroneScheduleConfiguration, Command
+from dronedelivery.solvers.drone_schedule_configuration import (
+    DroneScheduleConfiguration,
+    Command,
+)
 from tests.fixtures import full_problem, fixture
 
 

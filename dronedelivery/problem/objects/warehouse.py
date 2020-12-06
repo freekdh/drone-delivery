@@ -32,3 +32,6 @@ class WareHouse:
 
     def get_available_items(self, product):
         return self.inventory.get_available_items(product)
+
+    def get_inventory(self):
+        return dict(self.inventory._data)

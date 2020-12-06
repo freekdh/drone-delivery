@@ -1,5 +1,5 @@
 from tests.fixtures import full_problem, fixture
-from problem.objects.grid import Location
+from dronedelivery.problem.objects.grid import Location
 from collections import defaultdict
 
 
