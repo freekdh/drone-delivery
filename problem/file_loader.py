@@ -18,6 +18,7 @@ class LoadProblemFromFile:
             products=self.get_products(),
             grid=self.get_grid(),
             orders=self.get_orders(),
+            max_turns=self._n_turns,
         )
 
     def get_orders(self):

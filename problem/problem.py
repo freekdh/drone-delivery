@@ -3,12 +3,13 @@ from problem.environment import Environment
 
 
 class Problem:
-    def __init__(self, grid, warehouses, drones, products, orders):
+    def __init__(self, grid, warehouses, drones, products, orders, max_turns):
         self.grid = grid
         self.warehouses = warehouses
         self.drones = drones
         self.products = products
         self.orders = orders
+        self.max_turns = max_turns
 
         self.environment = self._get_environment()
 
