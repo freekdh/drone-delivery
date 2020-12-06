@@ -23,7 +23,7 @@ class Problem:
     def _get_environment(self):
         return Environment(grid=self.grid, warehouses=self.warehouses)
 
-    def get_customers(self, products):
+    def get_customers(self):
         orders_by_location = defaultdict(list)
         for order in self.orders:
             orders_by_location[order.location].append(order)

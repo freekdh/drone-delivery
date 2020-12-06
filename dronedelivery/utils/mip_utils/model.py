@@ -5,6 +5,6 @@ from .linear_expression import LinearExpression
 
 @dataclass
 class Model:
-    variables: list
+    decision_variables: list
     objective: LinearExpression
     constraints: list

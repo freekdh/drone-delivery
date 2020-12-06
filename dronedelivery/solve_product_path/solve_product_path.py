@@ -1,4 +1,5 @@
 import itertools
+from dataclasses import dataclass
 
 from dronedelivery.utils.mip_utils.variables import IntegerVariable
 from dronedelivery.utils.mip_utils.linear_expression import LinearExpression
@@ -7,24 +8,65 @@ from dronedelivery.utils.mip_utils.constraints import (
     LE_InequalityConstraint,
 )
 from dronedelivery.utils.mip_utils.model import Model
+from dronedelivery.problem.objects import Product
 
 
-class SolveProductPath:
+@dataclass
+class Trip:
+    origin: str
+    destination: str
+    product_type: Product
+    product_quantity: int
+
+
+class SolveProductTrips:
     def __init__(self, customers, hubs, products, max_flight_capacity, environment):
         self.environment = environment
         self.max_flight_capacity = max_flight_capacity
 
-        variables = self.get_variables(customers, hubs, products)
+        decision_variables = self.get_variables(customers, hubs, products)
         objective = self.get_objective(customers, hubs)
         constraints = self.get_constraints(customers, hubs, products)
 
         self.model = Model(
-            variables=variables, objective=objective, constraints=constraints
+            decision_variables=decision_variables,
+            objective=objective,
+            constraints=constraints,
         )
 
     def solve(self, Mip_Solver, max_seconds=120):
         mip_solver = Mip_Solver(model=self.model)
-        return mip_solver.solve(max_seconds=max_seconds)
+        solution = mip_solver.solve(max_seconds=max_seconds)
+        trips = self._get_trips(solution)
+        return trips
+
+    def _get_trips(self, solution):
+        trips_hub_to_customer = []
+        trips_hub_to_hub = []
+        for variable, value in solution.items():
+            if value != 0 and isinstance(variable, ProductsMoveCustomerHub):
+                trips_hub_to_customer.append(
+                    Trip(
+                        origin=variable.data["hub"],
+                        destination=variable.data["customer"],
+                        product_type=variable.data["product"],
+                        product_quantity=value,
+                    )
+                )
+            if value != 0 and isinstance(variable, ProductsMoveHubHub):
+                trips_hub_to_hub.append(
+                    Trip(
+                        origin=variable.data["hub1"],
+                        destination=variable.data["hub2"],
+                        product_type=variable.data["product"],
+                        product_quantity=value,
+                    )
+                )
+
+        return {
+            "hub_to_customer": trips_hub_to_customer,
+            "hub_to_hub": trips_hub_to_hub,
+        }
 
     def get_variables(self, customers, hubs, products):
         self.n_flights_variables = self._get_n_flights_variables(customers, hubs)

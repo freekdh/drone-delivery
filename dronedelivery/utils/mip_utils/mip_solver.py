@@ -5,7 +5,7 @@ from .constraints import EqualityConstraint, LE_InequalityConstraint
 from .variables import IntegerVariable
 
 
-class MipModel:
+class MipSolver:
     def __init__(self, model):
         self.m = Model(sense=MINIMIZE, solver_name=CBC)
         self.model_variables = self._add_variables_to_model(model.decision_variables)
