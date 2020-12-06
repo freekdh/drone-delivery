@@ -1,6 +1,6 @@
 from tests.fixtures import full_problem
-from problem.objects.grid import Location
-from problem.objects.warehouse import Inventory
+from dronedelivery.problem.objects.grid import Location
+from dronedelivery.problem.objects.warehouse import Inventory
 
 
 def test_n_warehouses(full_problem):

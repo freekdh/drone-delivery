@@ -1,5 +1,8 @@
-from problem.file_loader import LoadProblemFromFile
-from problem.environment import Environment
+from collections import defaultdict
+
+from dronedelivery.problem.file_loader import LoadProblemFromFile
+from dronedelivery.problem.environment import Environment
+from dronedelivery.problem.objects.customer import Customer
 
 
 class Problem:
@@ -19,3 +22,10 @@ class Problem:
 
     def _get_environment(self):
         return Environment(grid=self.grid, warehouses=self.warehouses)
+
+    def get_customers(self, products):
+        orders_by_location = defaultdict(list)
+        for order in self.orders:
+            orders_by_location[order.location].append(order)
+
+        return [Customer(orders) for location, orders in orders_by_location.items()]

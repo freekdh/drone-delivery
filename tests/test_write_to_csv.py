@@ -1,4 +1,4 @@
-from output_handlers.write_to_csv import WriteToCSV
+from dronedelivery.output_handlers.write_to_csv import WriteToCSV
 from tests.fixtures import fixture, nonsense_drone_schedule_configuration
 import os
 

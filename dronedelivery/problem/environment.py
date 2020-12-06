@@ -1,7 +1,7 @@
 from itertools import product
 import math
 
-from problem.objects.grid import Location
+from dronedelivery.problem.objects.grid import Location
 
 
 class Environment:

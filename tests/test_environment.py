@@ -1,7 +1,8 @@
-from tests.fixtures import full_problem
-from problem.objects.grid import Location
-from problem.objects.warehouse import WareHouse
 from unittest.mock import Mock
+
+from dronedelivery.problem.objects.grid import Location
+from dronedelivery.problem.objects.warehouse import WareHouse
+from tests.fixtures import full_problem
 
 
 def test_warehouses_in_environment(full_problem):

@@ -1,5 +1,4 @@
 from .standard_output_handler_interface import OutputHandler
-from collections import namedtuple
 
 
 class WriteToCSV(OutputHandler):
