@@ -7,7 +7,7 @@ from .product import Product
 
 class Inventory:
     def __init__(self):
-        self._data = defaultdict(lambda: 0)
+        self._data = defaultdict(int)
 
     def add_product(self, product, n_items=1):
         self._data[product] += n_items

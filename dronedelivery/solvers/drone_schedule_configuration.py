@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 class DroneScheduleConfiguration:
     def __init__(self, drones):
-        self.drone_schedules = {drone: LinkedList() for drone in drones}
+        self.drone_schedules = {drone: [] for drone in drones}
 
     def append_command_to_drone_schedule(self, drone, command):
         self.drone_schedules[drone].append(command)

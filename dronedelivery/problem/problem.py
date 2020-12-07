@@ -15,6 +15,7 @@ class Problem:
         self.max_turns = max_turns
 
         self.environment = self._get_environment()
+        self.customers = self.get_customers()
 
     @classmethod
     def from_file(cls, file_location):
