@@ -89,14 +89,14 @@ class SolveProductTrips:
         for customer, hub in itertools.product(customers, hubs):
             le.add_variable(
                 variable=self.n_flights_variables[customer, hub],
-                coefficient=self.environment.get_distance(hub, customer),
+                coefficient=self.environment.get_distance(hub.location, customer.location),
             )
 
         for hub1, hub2 in itertools.product(hubs, hubs):
             if hub1 != hub2:
                 le.add_variable(
                     variable=self.n_flights_hub_to_hub_variables[hub1, hub2],
-                    coefficient=self.environment.get_distance(hub1, hub2),
+                    coefficient=self.environment.get_distance(hub1.location, hub2.location),
                 )
         return le
 
@@ -200,7 +200,7 @@ class SolveProductTrips:
 
             constraints.append(
                 LE_InequalityConstraint(
-                    lhs=le_1 - le_2, rhs=hub.get_inventory()[product]
+                    lhs=le_1 - le_2, rhs=hub.get_available_items(product)
                 )
             )
         return constraints

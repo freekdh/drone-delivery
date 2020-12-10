@@ -10,6 +10,9 @@ class TripQ1:
     destination: str
     product_type: str
 
+    def copy_with_new_destination(self, new_destination):
+        return TripQ1(self.origin, new_destination, self.product_type)
+
 
 @dataclass
 class ProductRoute:
@@ -109,17 +112,24 @@ class OrderToProductPaths:
     ):
         hub_to_customer_trip = max(
             unique_trips_hub_to_customer[(order.location, product)],
-            key=lambda x: self._environment.get_distance(x.origin, x.destination),
+            key=lambda x: self._environment.get_distance(
+                x.origin.location, x.destination.location
+            ),
         )
         unique_trips_hub_to_customer[(order.location, product)].remove(
             hub_to_customer_trip
         )
+
+        hub_to_customer_trip = hub_to_customer_trip.copy_with_new_destination(order)
+
         try:
             hub_to_hub_trip = max(
                 unique_trips_hub_to_hub[
                     (hub_to_customer_trip.origin.location, product)
                 ],
-                key=lambda x: self._environment.get_distance(x.origin, x.destination),
+                key=lambda x: self._environment.get_distance(
+                    x.origin.location, x.destination.location
+                ),
             )
             unique_trips_hub_to_hub[
                 (hub_to_customer_trip.origin.location, product)

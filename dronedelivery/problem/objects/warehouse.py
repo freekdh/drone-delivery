@@ -7,7 +7,7 @@ from .product import Product
 
 class Inventory:
     def __init__(self):
-        self._data = defaultdict(lambda: 0)
+        self._data = defaultdict(int)
 
     def add_product(self, product, n_items=1):
         self._data[product] += n_items
@@ -39,8 +39,8 @@ class WareHouse:
     def get_available_products(self):
         return self.inventory.get_available_products()
 
+    def get_full_inventory(self) -> dict:
+        return self.inventory._data
+
     def get_available_items(self, product):
         return self.inventory.get_available_items(product)
-
-    def get_inventory(self):
-        return dict(self.inventory._data)

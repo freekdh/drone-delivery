@@ -12,12 +12,23 @@ class LoadProblemFromFile:
         self._get_raw_data()
 
     def get_problem(self):
+        warehouses = self.get_warehouses()
+
+        first_warehouse = next(
+            warehouse for warehouse in warehouses if warehouse.warehouse_id == 0
+        )
+
+        drones = self.get_drones(start_location=first_warehouse.location)
+        products = self.get_products()
+        grid = self.get_grid()
+        orders = self.get_orders()
+
         return self._ProblemClass(
-            warehouses=self.get_warehouses(),
-            drones=self.get_drones(),
-            products=self.get_products(),
-            grid=self.get_grid(),
-            orders=self.get_orders(),
+            warehouses=warehouses,
+            drones=drones,
+            products=products,
+            grid=grid,
+            orders=orders,
             max_turns=self._n_turns,
         )
 
@@ -34,9 +45,9 @@ class LoadProblemFromFile:
     def get_grid(self):
         return Grid(n_x=self._n_rows_grids, n_y=self._n_collumns_grids)
 
-    def get_drones(self):
+    def get_drones(self, start_location):
         return [
-            Drone(drone_id=i, max_payload=self._max_payload)
+            Drone(drone_id=i, max_payload=self._max_payload, start_location=start_location)
             for i in range(self._n_drones)
         ]
 

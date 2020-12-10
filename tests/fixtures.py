@@ -1,5 +1,7 @@
 from pytest import fixture
 import random
+from statistics import mean
+import pickle
 
 from dronedelivery.problem.problem import Problem
 from dronedelivery.solvers.drone_schedule_configuration import (
@@ -11,6 +13,8 @@ from dronedelivery.solvers.drone_schedule_configuration import (
     Deliver,
     Wait,
 )
+from dronedelivery.solve_product_path.solve_product_path import SolveProductTrips
+from dronedelivery.utils.mip_utils.mip_solver import MipSolver
 
 
 @fixture(scope="session")
@@ -36,6 +40,32 @@ def nonsense_drone_schedule_configuration():
             )
 
     return drone_schedule_configuration
+
+
+@fixture(scope="session")
+def problem_and_product_paths():
+    try:
+        full_problem, product_paths = pickle.load(
+            open("data/product_paths_mip_solution_full_problem.pkl", "rb")
+        )
+        return full_problem, product_paths
+    except:
+        data_file = "data/busy_day.in"
+        full_problem = Problem.from_file(data_file)
+        max_flight_capacity = mean(drone.max_payload for drone in full_problem.drones)
+        solve_product_trips = SolveProductTrips(
+            customers=full_problem.customers,
+            hubs=full_problem.warehouses,
+            products=full_problem.products,
+            max_flight_capacity=max_flight_capacity,
+            environment=full_problem.get_environment(),
+        )
+        product_paths = solve_product_trips.solve(MipSolver, max_seconds=120)
+        pickle.dump(
+            (full_problem, product_paths),
+            open("data/product_paths_mip_solution_full_problem.pkl", "wb"),
+        )
+        return full_problem, product_paths
 
 
 def get_random_command(problem):
