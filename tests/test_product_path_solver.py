@@ -17,7 +17,7 @@ def test_product_path_solver_integration(full_problem):
         hubs=hubs,
         products=products,
         max_flight_capacity=max_flight_capacity,
-        environment=full_problem.environment,
+        environment=full_problem.get_environment(),
     )
 
     product_trips = solve_product_trips.solve(Mip_Solver=MipSolver, max_seconds=60)

@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from collections import defaultdict
 from dronedelivery.problem.objects.warehouse import WareHouse
 import operator
-from dronedelivery.helpers.linked_list import NoPreviousNodeError
 
 
 @dataclass(eq=False)
@@ -73,12 +72,16 @@ class HeuristicSolver:
             }
 
         min_distance = min(
-            self._environment.get_distance(current_location, trip.destination)
+            self._environment.get_distance(
+                current_location.location, trip.destination.location
+            )
             for trip in trips
         )
 
         max_distance = max(
-            self._environment.get_distance(current_location, trip.destination)
+            self._environment.get_distance(
+                current_location.location, trip.destination.location
+            )
             for trip in trips
         )
 
@@ -89,7 +92,7 @@ class HeuristicSolver:
                 trip: (
                     (
                         self._environment.get_distance(
-                            current_location, trip.destination
+                            current_location.location, trip.destination.location
                         )
                         - min_distance
                     )
@@ -154,9 +157,7 @@ class HeuristicSolver:
             if isinstance(trip.destination, WareHouse):
                 commands.append(Unload(drone, trip.product_type, 1, trip.destination))
             else:  # TODO, get the right order...
-                commands.append(
-                    Deliver(drone, trip.destination.orders[0], trip.product_type, 1)
-                )
+                commands.append(Deliver(drone, trip.destination, trip.product_type, 1))
         return commands
 
     def _choose_best_hub(self, drone, look_n_trips_in_the_future=10):

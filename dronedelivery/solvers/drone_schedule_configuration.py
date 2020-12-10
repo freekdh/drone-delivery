@@ -33,6 +33,15 @@ class Command(LinkedListNode, ABC):
     def get_string_representation(self):
         raise NotImplementedError
 
+    def get_travel_turns(self):
+        raise NotImplementedError
+
+    def get_execution_turns(self):
+        raise NotImplementedError
+
+    def get_location(self):
+        raise NotImplementedError
+
 
 class Load(Command):
     def __init__(self, drone, product, n_items, warehouse):
@@ -44,6 +53,15 @@ class Load(Command):
 
     def get_string_representation(self):
         return f"{self.drone.drone_id} L {self.warehouse.warehouse_id} {self.product.product_id} {self.n_items}"
+
+    def get_travel_turns(self, previous_location, environment):
+        return environment.get_distance(previous_location, self.warehouse.location)
+
+    def get_execution_turns(self):
+        return 1
+
+    def get_location(self):
+        return self.warehouse.location
 
 
 class Unload(Command):
@@ -57,6 +75,15 @@ class Unload(Command):
     def get_string_representation(self):
         return f"{self.drone.drone_id} U {self.warehouse.warehouse_id} {self.product.product_id} {self.n_items}"
 
+    def get_travel_turns(self, previous_location, environment):
+        return environment.get_distance(previous_location, self.warehouse.location)
+
+    def get_execution_turns(self):
+        return 1
+
+    def get_location(self):
+        return self.warehouse.location
+
 
 class Deliver(Command):
     def __init__(self, drone, order, product, n_items):
@@ -69,6 +96,15 @@ class Deliver(Command):
     def get_string_representation(self):
         return f"{self.drone.drone_id} D {self.order.order_id} {self.product.product_id} {self.n_items}"
 
+    def get_travel_turns(self, previous_location, environment):
+        return environment.get_distance(previous_location, self.order.location)
+
+    def get_execution_turns(self):
+        return 1
+
+    def get_location(self):
+        return self.order.location
+
 
 class Wait(Command):
     def __init__(self, drone, wait_turns):
@@ -78,6 +114,15 @@ class Wait(Command):
 
     def get_string_representation(self):
         return f"{self.drone.drone_id} W {self.wait_turns}"
+
+    def get_travel_turns(self, previous_location, environment):
+        return 0
+
+    def get_execution_turns(self):
+        return self.wait_turns
+
+    def get_location(self):
+        raise NotImplementedError
 
 
 class EmptyDroneSchedule(Exception):

@@ -12,7 +12,7 @@ def test_order_to_product_paths_integration(problem_and_product_paths):
     )
 
     order_to_product_paths = OrderToProductPaths(
-        product_paths, full_problem.orders, full_problem.environment
+        product_paths, full_problem.orders, full_problem.get_environment()
     )
 
     order_to_paths = order_to_product_paths.solve()

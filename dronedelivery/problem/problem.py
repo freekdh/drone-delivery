@@ -14,15 +14,16 @@ class Problem:
         self.orders = orders
         self.max_turns = max_turns
 
-        self.environment = self._get_environment()
         self.customers = self.get_customers()
 
     @classmethod
     def from_file(cls, file_location):
         return LoadProblemFromFile(cls, file_location).get_problem()
 
-    def _get_environment(self):
-        return Environment(grid=self.grid, warehouses=self.warehouses)
+    def get_environment(self):
+        return Environment(
+            grid=self.grid, warehouses=self.warehouses, orders=self.orders
+        )
 
     def get_customers(self):
         orders_by_location = defaultdict(list)

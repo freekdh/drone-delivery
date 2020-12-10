@@ -16,7 +16,7 @@ def main():
     full_problem, product_paths
 
     order_to_product_paths = OrderToProductPaths(
-        product_paths, full_problem.orders, full_problem.environment
+        product_paths, full_problem.orders, full_problem.get_environment()
     )
 
     order_to_paths = order_to_product_paths.solve()
@@ -24,13 +24,12 @@ def main():
     heuristic_solver = HeuristicSolver(
         drones=full_problem.drones,
         orders_to_routes=order_to_paths,
-        environment=full_problem.environment,
+        environment=full_problem.get_environment(),
     )
 
     drone_schedule = heuristic_solver.solve()
 
-    write_to_csv = WriteToCSV()
-    write_to_csv.run(drone_schedule, output_file="test_location_to_save_csv")
+    pickle.dump((full_problem, drone_schedule), open("test.pkl", "wb"))
 
 
 if __name__ == "__main__":

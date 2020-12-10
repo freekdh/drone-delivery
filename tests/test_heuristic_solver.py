@@ -17,12 +17,16 @@ def heuristic_solver(problem_and_product_paths):
     )
 
     order_to_product_paths = OrderToProductPaths(
-        product_paths, full_problem.orders, full_problem.environment
+        product_paths, full_problem.orders, full_problem.get_environment()
     )
 
     order_to_paths = order_to_product_paths.solve()
 
-    return HeuristicSolver(drones=full_problem.drones, orders_to_routes=order_to_paths)
+    return HeuristicSolver(
+        drones=full_problem.drones,
+        orders_to_routes=order_to_paths,
+        environment=full_problem.get_environment(),
+    )
 
 
 def test_heuristic_solver(heuristic_solver):

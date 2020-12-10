@@ -58,7 +58,7 @@ def problem_and_product_paths():
             hubs=full_problem.warehouses,
             products=full_problem.products,
             max_flight_capacity=max_flight_capacity,
-            environment=full_problem.environment,
+            environment=full_problem.get_environment(),
         )
         product_paths = solve_product_trips.solve(MipSolver, max_seconds=120)
         pickle.dump(
