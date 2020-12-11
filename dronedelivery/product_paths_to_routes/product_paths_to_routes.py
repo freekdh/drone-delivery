@@ -14,7 +14,7 @@ class TripQ1:
         return TripQ1(self.origin, new_destination, self.product_type)
 
 
-@dataclass
+@dataclass(frozen=True, eq=False)
 class ProductRoute:
     trips: list
 
@@ -42,7 +42,7 @@ class OrderToTrips:
 
     def get_all_trips(self):
         trips = set()
-        for product_route in self.product_routes.values():
+        for product_route in self.product_routes:
             for trip in product_route.trips:
                 trips.add(trip)
         return trips
@@ -63,7 +63,7 @@ class OrderToProductPaths:
 
         order_to_product_paths = dict()
         for order in sorted_orders:
-            product_routes = {}
+            product_routes = []
             for product in order.demand:
                 trips = self.get_trips(
                     order,
@@ -71,7 +71,7 @@ class OrderToProductPaths:
                     unique_trips_hub_to_customer,
                     unique_trips_hub_to_hub,
                 )
-                product_routes[product] = ProductRoute(trips=trips)
+                product_routes.append(ProductRoute(trips=trips))
 
             order_to_product_paths[order] = OrderToTrips(order, product_routes)
 

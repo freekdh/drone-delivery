@@ -51,10 +51,10 @@ class OrderInventory:
         else:
             self._products_to_n_items[product] = 1
 
-        if self._check_all_products_are_delivered():
+        if self.all_products_are_delivered():
             self.last_order_delivered_at = time
 
-    def _check_all_products_are_delivered(self):
+    def all_products_are_delivered(self):
         return self.order.get_demand() == self._products_to_n_items
 
 
@@ -129,3 +129,9 @@ class Environment:
 
     def get_time_last_product_delivered(self, order):
         return self._order_demand[order].last_order_delivered_at
+
+    def is_delivered(self, order):
+        return self._order_demand[order].all_products_are_delivered()
+
+    def get_delivered_orders(self):
+        return (order for order in self.orders if self.is_delivered(order))

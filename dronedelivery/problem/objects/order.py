@@ -14,3 +14,6 @@ class Order:
 
     def __hash__(self):
         return id(self)
+
+    def __repr__(self):
+        return f"Order {self.order_id}"
