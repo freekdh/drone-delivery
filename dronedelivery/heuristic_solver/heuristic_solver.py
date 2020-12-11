@@ -39,7 +39,6 @@ class HeuristicSolver:
         )
 
         while True:
-            print(sum(len(trips) for trips in self.trips_by_hub_origin.values()))
             for drone in self._drones:
                 hub = self._choose_best_hub(drone)
                 if hub is None:
@@ -196,7 +195,7 @@ class HeuristicSolver:
         trip_to_priority_database = dict()
         for order, order_route in sorted_order_to_route.items():
             product_award = order_award
-            for product, product_route in order_route.product_routes.items():
+            for product_route in order_route.product_routes:
                 trip_award = product_award
                 current_trip = None
                 for trip in reversed(product_route.trips):

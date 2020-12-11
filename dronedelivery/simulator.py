@@ -1,9 +1,3 @@
-from dronedelivery.solvers.drone_schedule_configuration import (
-    DroneScheduleConfiguration,
-)
-import math
-
-
 class DroneSimulator:
     def __init__(self, drone, ordered_commands, environment):
         self.drone = drone
@@ -34,43 +28,23 @@ class DroneSimulator:
 
 
 class Simulator:
-    def __init__(self, problem):
-        self.problem = problem
+    def __init__(self, max_turns):
+        self.max_turns = max_turns
 
-    def get_objective(self, drone_schedule: DroneScheduleConfiguration):
-        self.environment = self.problem.get_environment()
-
+    def run(self, drone_schedule, environment):
         drone_simulators = [
             DroneSimulator(
                 drone=drone,
                 ordered_commands=drone_schedule.get_drone_commands(drone),
-                environment=self.environment,
+                environment=environment,
             )
             for drone in drone_schedule.get_drones()
         ]
 
-        for t in range(self.problem.max_turns):
+        for t in range(self.max_turns):
             drone_actions = [
                 drone_simulator.get_action(t)
                 for drone_simulator in drone_simulators
                 if drone_simulator.has_action(t)
             ]
-            self.environment.apply_actions(drone_actions, t)
-
-        return sum(
-            self._get_order_score(order, self.environment)
-            for order in self.problem.orders
-        )
-
-    def _get_order_score(self, order, environment):
-        try:
-            return math.ceil(
-                100
-                * (
-                    self.problem.max_turns
-                    - environment.get_time_last_product_delivered(order)
-                )
-                / (self.problem.max_turns)
-            )
-        except TypeError:
-            return 0
+            environment.apply_actions(drone_actions, t)
