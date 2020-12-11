@@ -3,3 +3,5 @@ However, the consistency is probably not correct. We need to make sure that trip
 I got stuck when it created empty lists of candidate trips to perform, since no action was valid? weird...
 
 Well, once a drone has set on a hub, it will get stuck if all the trips from that hub rely on other hubs... So maybe that's it. ANyway it's late and time to go to bed.
+
+Don't worry, new day new Freek!

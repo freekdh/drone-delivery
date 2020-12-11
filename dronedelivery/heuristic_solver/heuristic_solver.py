@@ -21,6 +21,45 @@ class TripLL(LinkedListNode):
         self.destination = destination
         self.product_type = product_type
 
+    def is_valid(self, finished_trips):
+        if self.has_previous_node():
+            previous_node = self.get_previous_node()
+            return previous_node in finished_trips
+        else:
+            return True
+
+
+class Hub:
+    def __init__(self, warehouse, trips):
+        self.warehouse = warehouse
+        assert all(trip.origin == warehouse for trip in trips)
+        self.trips = sorted(trips, key=lambda x: x.priority, reverse=True)
+
+    def has_trips(self):
+        return True if self.trips else False
+
+    def get_score(self, n_future_trips, finished_trips):
+        return sum(
+            trip.priority
+            for trip in self.get_next_valid_trips(
+                n=n_future_trips, finished_trips=finished_trips
+            )
+        )
+
+    def get_next_valid_trips(self, n, finished_trips):
+        assert n > 0
+        count_trips = 0
+        for trip in self.trips:
+            if trip.is_valid(finished_trips):
+                count_trips += 1
+                yield trip
+
+            if count_trips == n:
+                break
+
+    def remove_trip(self, trip):
+        self.trips.remove(trip)
+
 
 class HeuristicSolver:
     def __init__(self, drones, orders_to_routes, environment):
@@ -28,6 +67,14 @@ class HeuristicSolver:
         self._drones = drones
         self._orders = orders_to_routes.values()
         self._environment = environment
+
+    def _get_hub_with_best_future_score(self, hubs, n_future_trips=10):
+        return max(
+            (hub for hub in hubs if hub.has_trips()),
+            key=lambda x: x.get_score(
+                n_future_trips=n_future_trips, finished_trips=self.finished_trips
+            ),
+        )
 
     def solve(self):
         drone_schedule_configuration = DroneScheduleConfiguration(drones=self._drones)
@@ -38,11 +85,17 @@ class HeuristicSolver:
             list(trip_to_priority.keys())
         )
 
+        hubs_ = [
+            Hub(warehouse=warehouse, trips=trips)
+            for warehouse, trips in self.trips_by_hub_origin.items()
+        ]
+
+        self.finished_trips = set()
+
         while True:
-            for drone in self._drones:
-                hub = self._choose_best_hub(drone)
-                if hub is None:
-                    break
+            try:
+                for drone in self._drones:
+                    hub = self._get_hub_with_best_future_score(hubs_)
 
                 sequence_of_commands = self._get_best_sequence_of_commands(
                     hub=hub, drone=drone
@@ -52,9 +105,7 @@ class HeuristicSolver:
                     drone_schedule_configuration.append_command_to_drone_schedule(
                         drone, command
                     )
-
-            hub = self._choose_best_hub(drone)
-            if hub is None:
+            except ValueError:
                 break
         return drone_schedule_configuration
 
@@ -69,18 +120,13 @@ class HeuristicSolver:
                 trip: ((trip.priority - min_priority) / (max_priority - min_priority))
                 for trip in trips
             }
-
         min_distance = min(
-            self._environment.get_distance(
-                current_location.location, trip.destination.location
-            )
+            self._environment.get_distance(current_location, trip.destination.location)
             for trip in trips
         )
 
         max_distance = max(
-            self._environment.get_distance(
-                current_location.location, trip.destination.location
-            )
+            self._environment.get_distance(current_location, trip.destination.location)
             for trip in trips
         )
 
@@ -91,7 +137,7 @@ class HeuristicSolver:
                 trip: (
                     (
                         self._environment.get_distance(
-                            current_location.location, trip.destination.location
+                            current_location, trip.destination.location
                         )
                         - min_distance
                     )
@@ -112,11 +158,11 @@ class HeuristicSolver:
 
         total_weight = 0
         trips_for_drone = []
-        current_location = hub
+        current_location = hub.warehouse.location
 
         while True:
             filtered_trips = []
-            for trip in self.trips_by_hub_origin[hub]:
+            for trip in hub.trips:
                 if trip.product_type.weight + total_weight > drone.max_payload:
                     continue
                 # try:
@@ -128,7 +174,8 @@ class HeuristicSolver:
 
                 filtered_trips.append(trip)
 
-                if len(filtered_trips) == 10:
+                if len(filtered_trips) == look_n_trips_in_the_future:
+                    # TODO: is this necessary?
                     break
 
             if len(filtered_trips) == 0:
@@ -138,10 +185,12 @@ class HeuristicSolver:
                 current_location, filtered_trips
             )
 
-            current_location = selected_trip.destination
+            current_location = selected_trip.destination.location
             total_weight += selected_trip.product_type.weight
             trips_for_drone.append(selected_trip)
-            self.trips_by_hub_origin[hub].remove(trips_for_drone[-1])
+
+            hub.remove_trip(selected_trip)
+            self.finished_trips.add(selected_trip)
 
         commands = []
 
@@ -163,7 +212,11 @@ class HeuristicSolver:
         hub_to_score = {}
         remove_keys = set()
         for hub, trips in self.trips_by_hub_origin.items():
-            score = sum(trip.priority for trip in trips[:look_n_trips_in_the_future])
+            score = sum(
+                trip.priority
+                for trip in trips[:look_n_trips_in_the_future]
+                if trip.is_valid(finished_trips=self.finished_trips)
+            )
             if score == 0:
                 assert len(self.trips_by_hub_origin[hub]) == 0
                 remove_keys.add(hub)

@@ -18,19 +18,12 @@ class WarehouseInventory:
         else:
             self._products_to_n_items[product] = 1
 
-        # because we let it go negtive:
-        # TODO: for now just ...
-        if self._products_to_n_items[product] == 0:
-            del self._products_to_n_items[product]
-
     def remove(self, product):
         if (
             product in self._products_to_n_items
             or self._products_to_n_items[product] == 0
         ):
-            # raise EmptyInventory(f"product {product} is not available in inventory")
-            # TODO: for now just subtract
-            self._products_to_n_items[product] -= 1
+            raise EmptyInventory(f"product {product} is not available in inventory")
         else:
             self._products_to_n_items[product] -= 1
 

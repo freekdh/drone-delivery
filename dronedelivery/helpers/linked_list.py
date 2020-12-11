@@ -21,6 +21,9 @@ class LinkedListNode:
     def set_previous_node(self, node):
         self._previous_node = node
 
+    def has_previous_node(self):
+        return True if self._previous_node else False
+
 
 class HeadOfLinkedList:
     def __init__(self):
