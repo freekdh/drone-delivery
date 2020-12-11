@@ -5,3 +5,8 @@ I got stuck when it created empty lists of candidate trips to perform, since no 
 Well, once a drone has set on a hub, it will get stuck if all the trips from that hub rely on other hubs... So maybe that's it. ANyway it's late and time to go to bed.
 
 Don't worry, new day new Freek!
+
+When a trip get's selected for a drone, it cannot immediately be marked as "finished". Another drone might then take the next
+trip thinking the previous has already been delivered in the last drone's sequence. 
+
+- todo: look at madness in `_get_commands` in heuristic solver
