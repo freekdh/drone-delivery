@@ -6,16 +6,14 @@ from dronedelivery.solvers.drone_schedule_configuration import (
 
 
 class ObjectiveCalculator:
-    def __init__(self, problem, simulator):
+    def __init__(self, orders, simulator, max_turns):
         self.simulator = simulator
-        self.problem = problem
+        self.max_turns = max_turns
+        self.orders = orders
 
-    def get_objective(self, drone_schedule: DroneScheduleConfiguration):
-        environment = self.problem.get_environment()
+    def get_objective(self, drone_schedule: DroneScheduleConfiguration, environment):
         self.simulator.run(drone_schedule, environment)
-        return sum(
-            self._get_order_score(order, environment) for order in self.problem.orders
-        )
+        return sum(self._get_order_score(order, environment) for order in self.orders)
 
     def _get_order_score(self, order, environment):
         try:
