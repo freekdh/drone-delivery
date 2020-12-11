@@ -1,13 +1,13 @@
 import itertools
 from dataclasses import dataclass
 
-from dronedelivery.utils.mip_utils.variables import IntegerVariable
-from dronedelivery.utils.mip_utils.linear_expression import LinearExpression
-from dronedelivery.utils.mip_utils.constraints import (
+from dronedelivery.helpers.mip_utils.variables import IntegerVariable
+from dronedelivery.helpers.mip_utils.linear_expression import LinearExpression
+from dronedelivery.helpers.mip_utils.constraints import (
     EqualityConstraint,
     LE_InequalityConstraint,
 )
-from dronedelivery.utils.mip_utils.model import Model
+from dronedelivery.helpers.mip_utils.model import Model
 from dronedelivery.problem.objects import Product
 
 
@@ -89,14 +89,18 @@ class SolveProductTrips:
         for customer, hub in itertools.product(customers, hubs):
             le.add_variable(
                 variable=self.n_flights_variables[customer, hub],
-                coefficient=self.environment.get_distance(hub.location, customer.location),
+                coefficient=self.environment.get_distance(
+                    hub.location, customer.location
+                ),
             )
 
         for hub1, hub2 in itertools.product(hubs, hubs):
             if hub1 != hub2:
                 le.add_variable(
                     variable=self.n_flights_hub_to_hub_variables[hub1, hub2],
-                    coefficient=self.environment.get_distance(hub1.location, hub2.location),
+                    coefficient=self.environment.get_distance(
+                        hub1.location, hub2.location
+                    ),
                 )
         return le
 

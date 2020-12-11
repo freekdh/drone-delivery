@@ -1,5 +1,5 @@
 from dronedelivery.solve_product_path.solve_product_path import SolveProductTrips
-from dronedelivery.utils.mip_utils.mip_solver import MipSolver
+from dronedelivery.helpers.mip_utils.mip_solver import MipSolver
 from statistics import mean
 
 from tests.fixtures import full_problem

@@ -14,7 +14,7 @@ from dronedelivery.solvers.drone_schedule_configuration import (
     Wait,
 )
 from dronedelivery.solve_product_path.solve_product_path import SolveProductTrips
-from dronedelivery.utils.mip_utils.mip_solver import MipSolver
+from dronedelivery.helpers.mip_utils.mip_solver import MipSolver
 
 
 @fixture(scope="session")

@@ -1,4 +1,4 @@
-from dronedelivery.utils.mip_utils.linear_expression import LinearExpression
+from dronedelivery.helpers.mip_utils.linear_expression import LinearExpression
 
 
 class EqualityConstraint:
