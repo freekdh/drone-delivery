@@ -28,6 +28,22 @@ class TripLL(LinkedListNode):
         else:
             return True
 
+    def get_command(self, drone, product_quantity):
+        if isinstance(self.destination, WareHouse):
+            return Unload(
+                drone=drone,
+                warehouse=self.destination,
+                product=self.product_type,
+                n_items=product_quantity,
+            )
+        else:
+            return Deliver(
+                drone=drone,
+                order=self.destination,
+                product=self.product_type,
+                n_items=product_quantity,
+            )
+
 
 class Hub:
     def __init__(self, warehouse, trips):
@@ -60,6 +76,9 @@ class Hub:
     def remove_trip(self, trip):
         self.trips.remove(trip)
 
+    def get_location(self):
+        return self.warehouse.location
+
 
 class HeuristicSolver:
     def __init__(self, drones, orders_to_routes, environment):
@@ -68,24 +87,20 @@ class HeuristicSolver:
         self._orders = orders_to_routes.values()
         self._environment = environment
 
-    def _get_hub_with_best_future_score(self, hubs, n_future_trips=10):
-        return max(
-            (hub for hub in hubs if hub.has_trips()),
-            key=lambda x: x.get_score(
-                n_future_trips=n_future_trips, finished_trips=self.finished_trips
-            ),
-        )
-
-    def solve(self):
-        drone_schedule_configuration = DroneScheduleConfiguration(drones=self._drones)
-
+        # Fix this...
         trip_to_priority = self._get_trip_to_priority_database()
-
         self.trips_by_hub_origin = self._get_trips_by_hub_origin(
             list(trip_to_priority.keys())
         )
 
-        hubs_ = [
+    def solve(self):
+        """
+        Solve and return a drone schedule
+        """
+
+        drone_schedule_configuration = DroneScheduleConfiguration(drones=self._drones)
+
+        hubs = [
             Hub(warehouse=warehouse, trips=trips)
             for warehouse, trips in self.trips_by_hub_origin.items()
         ]
@@ -95,19 +110,29 @@ class HeuristicSolver:
         while True:
             try:
                 for drone in self._drones:
-                    hub = self._get_hub_with_best_future_score(hubs_)
+                    hub = self._get_hub_with_best_future_score(hubs, n_future_trips=10)
 
-                sequence_of_commands = self._get_best_sequence_of_commands(
-                    hub=hub, drone=drone
-                )
-
-                for command in sequence_of_commands:
-                    drone_schedule_configuration.append_command_to_drone_schedule(
-                        drone, command
+                    sequence_of_trips = self._get_best_sequence_of_trips(
+                        hub=hub, max_payload=drone.max_payload
                     )
+
+                    sequence_of_commands = self._get_commands(sequence_of_trips, drone)
+
+                    for command in sequence_of_commands:
+                        drone_schedule_configuration.append_command_to_drone_schedule(
+                            drone, command
+                        )
             except ValueError:
                 break
         return drone_schedule_configuration
+
+    def _get_hub_with_best_future_score(self, hubs, n_future_trips):
+        return max(
+            (hub for hub in hubs if hub.has_trips()),
+            key=lambda x: x.get_score(
+                n_future_trips=n_future_trips, finished_trips=self.finished_trips
+            ),
+        )
 
     def _get_easiest_trip_for_drone(self, current_location, trips):
         min_priority = min(trip.priority for trip in trips)
@@ -154,16 +179,18 @@ class HeuristicSolver:
             key=operator.itemgetter(1),
         )[0]
 
-    def _get_best_sequence_of_commands(self, hub, drone, look_n_trips_in_the_future=10):
+    def _get_best_sequence_of_trips(
+        self, hub, max_payload, look_n_trips_in_the_future=10
+    ):
 
         total_weight = 0
         trips_for_drone = []
-        current_location = hub.warehouse.location
+        current_location = hub.get_location()
 
         while True:
             filtered_trips = []
             for trip in hub.trips:
-                if trip.product_type.weight + total_weight > drone.max_payload:
+                if trip.product_type.weight + total_weight > max_payload:
                     continue
                 # try:
                 #     previous_node = trip.get_previous_node()
@@ -191,7 +218,10 @@ class HeuristicSolver:
 
             hub.remove_trip(selected_trip)
             self.finished_trips.add(selected_trip)
+        return trips_for_drone
 
+    def _get_commands(self, trips_for_drone, drone):
+        # TODO: def need to look at this madness
         commands = []
 
         trips_for_drone_by_product_type = defaultdict(set)
