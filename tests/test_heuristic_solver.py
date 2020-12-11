@@ -7,7 +7,7 @@ from dronedelivery.solvers.drone_schedule_configuration import (
 )
 from tests.fixtures import problem_and_product_paths
 from pytest import fixture
-from dronedelivery.simulator.objective_simulator import Simulator
+from dronedelivery.simulator import Simulator
 
 
 @fixture

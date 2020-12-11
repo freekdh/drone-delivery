@@ -1,4 +1,4 @@
-from dronedelivery.simulator.objective_simulator import Simulator
+from dronedelivery.simulator import Simulator
 import pickle
 
 
